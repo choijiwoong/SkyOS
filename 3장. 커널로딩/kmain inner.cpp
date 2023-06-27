@@ -141,6 +141,17 @@ void SkyConsole::Print(const char* str, ...){
 						break;
 					}
 					
+					case 'f': {//4장의 FPU init 이후 추가
+						double double_temp;
+						double_temp=va_arg(args, double);
+						char buffer[512];
+						ftoa_fixed(buffer, double_temp);//double을 char*로 바꿈 
+						Write(buffer);
+						i++;
+						break;
+					}
+						
+					
 					default://%t처럼 이상한거 들어오면 강제종료 
 						va_end(args);
 						return;
