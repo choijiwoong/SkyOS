@@ -1,0 +1,7 @@
+﻿color white/blue yellow/green
+timeout 20
+default 0
+
+title Sky OS
+kernel /SkyOS32.EXE
+module /SkyOS32.map SKYOS32_MAP #GRUB에서 module 모듈이름 별칭으로 올리면 커널과 함께 메모리에 로드된다. 여까지를 커널 시스템의 마지막 주소로 생각하고 이 뒤부터 커널에 필요한 자료구조 공간 할당.
