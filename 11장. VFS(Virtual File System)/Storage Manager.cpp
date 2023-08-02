@@ -37,3 +37,59 @@ class StorageManager{
 		int m_storageCount;
 		FileSysAdaptor* m_pCurrentFileSystem;//파일 시스템 저장 
 }; 
+
+//표준인터페이스 제공을 위한 파일입출력함수 재정의
+FILE *fopen(const char* filename, const char* mode){
+	return StorageManager::GetInstance()->OpenFile(filename, mode);
+}
+size_t fread(void *ptr, size_t size, size_t count, FILE* stream){
+	return StorageManager::GetInstance()->ReadFile(stream, (unsigned char*)ptr, size, count);
+}
+size_t fwrite(cosnt void* ptr, size_t size, size_t count, FILE* stream){
+	return StorageManager::GetInstance()->WriteFile(stream, (unsigned char*)ptr, size, count);
+}
+int fclose(FILE* stream){
+	return StorageManager::GetInstance()->CloseFile(stream);
+}
+int feof(FILE* stream){
+	if(stream->_eod!=0)
+		return stream->_eof;
+	return 0;
+}
+int fseek(FILE* stream, long int offset, int whence){
+	if(SEEK_CUR==whence){//찾고자하는 게 지금 읽고 있는 위치라면 그대로 읽기 
+		fgetc(stream);
+		return 1;
+	}
+	...
+	return 0;
+}
+long int ftell(FILE* stream){
+	return (long int)stream->_position;//현재 위치 반환 
+}
+int fgetc(FILE* stream){
+	char buf[2];//\0때문에 2바이트인가? 
+	
+	int readCount=StorageManager::GetInstance()->ReadFile(stream, (unsigned char*)buf, 1, 1);//1크기만큼 1번 읽어라 
+	if(readCount==0)
+		return EOF;
+	return buf[0];
+}
+char* fgetc(char *dst, int max, FILE *fp){//dst에서부터 max만큼 읽어라 
+	int c=0;
+	char* p=nullptr;
+	for(p=dst, max--; max>0; max--){
+		if((c=fgetc(fp))==EOF)//\0
+			break;
+		if(c==0x0d)//\r
+			continue;
+		
+		*p++=c;//읽기 
+		if(c==0x0a)//\n
+			break; 
+	}
+	*p=0;
+	if(p==dst || c==EOF)//변함이 없거나, 읽은게 종료일 경우 
+		return NULL;
+	return (dst);
+}
