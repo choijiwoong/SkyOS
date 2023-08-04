@@ -1,5 +1,13 @@
 #include <iostream>
 
+#pragma pack (push, 1)
+typedef struct registers{ 
+	u32int ds, es, fs, gs;//데이터 세그먼트 셀렉터
+	u32int edi, esi, ebp, esp, ebx, edx, ecx, eas;//PUSHAD
+	u32int eip, cs, eflags, esp, ss;//CPU가 자동으로 채우는 데이터 
+}registers_t;
+#pragma pack (pop) 
+
 class Thread{
 	public:
 		int			m_taskState;//Init, Running, Stop, Terminate
