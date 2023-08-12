@@ -1,4 +1,6 @@
 //커널 API
+#define MAX_SYSCALL 8
+_declspec(naked) void SysCallDispatcher();
 
 static void* _syscalls[]={
 	kprintf,
@@ -8,7 +10,15 @@ static void* _syscalls[]={
 	CreateDefaultHeap,
 	GetTickCount,
 	CreateThread,
+	ksleep, //시스템 API 추가
+	Beep,
 };
+void ksleep(int millisecond){
+	msleep(millisecond);
+}
+void Beep(){
+	//?
+}
 
 void InitializeSysCall(){
 	setvect(0x80, SysCallDispatcher, I86_IDT_DESC_RING3);//0x80인터럽트 시 SysCallDispatcher함수를 호출한다. 

@@ -1,3 +1,12 @@
+//시스템 API 추가
+void sleep(int millisecond){
+	__asm{
+		mov ebx, millisecond
+		mov eax, 7
+		int 0x80
+	}
+} 
+
 //유저 API 
 uint32_t GetTickCount();
 void free(void *p);
@@ -23,4 +32,25 @@ u32int malloc(u32int sz){
 		mov address, eax; //결과값을 address에 저장 
 	}
 	return address;
+}
+
+//비프음 출력 추가
+#define SOUND_MAGIC 0xB6
+
+void Sound(UINT16 Frequency){
+	OutPortByte(0x43, SOUND_MAGIC);
+	
+	Frequency=120000L / Frequency;
+	OutPortByte(0x42, Frequency>>8);
+	OutPortByte(0x61, InPortByte(0x61) | 3);
+} 
+
+void NoSound(){
+	OutPortByte(0x61, InPortByte(0x61)&~3);
+}
+
+void Beep(){
+	Sound(1000);
+	msleep(100);
+	NoSound();
 }
