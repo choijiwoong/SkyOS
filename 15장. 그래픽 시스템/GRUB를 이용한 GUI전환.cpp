@@ -75,3 +75,4 @@ bool SkyWindow<T>::Clear(){
 
 //템플릿 클래스를 이용한 예시_이를 상속받는 클래스는 Print나 Run같은 메소드를 구현해야만 컴파일이 된다. 
 SkyWindow<SKY_GUI_SYSTEM>* m_pWindow; 
+
