@@ -3,6 +3,8 @@
 응용프로그램은 커널API를 직접 호출하는 것이 아닌 wrapperWIN32는 kernel32.dll->ntdll.dll 혹은 gdi32.dll)를 통해 요청을 하는 형태로 진행되며, 
 정적 라이브러리 userlib.lib(의 CreateHeap으로 응용프로그램이 요청을 하면 SkyOS에서 SSDT(System Service Descriptor Table)을 참조하여 해당 함수를 반환한다. 
 */
+#include "UserAPI.h"
+
 void CreateHeap();
 void CreateDefaultHeap();
 extern "C" void TerminateProcess();
