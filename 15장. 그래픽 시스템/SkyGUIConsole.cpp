@@ -49,3 +49,42 @@ DWORD WINAPI GUIWatchDogProc(LPVOID parameter){
 bool SkyGUIConsole::Run(){
 	ProcessManager::GetInstance()->CreateProcessFromMemory("GUIWatchDog", GUIWatchDogProc, NULL, PROCESS_KERNEL);
 }
+
+//WIN32스타일 코딩
+int APIWNTRY wWinMain{
+	.....
+	MyRegisterClass(hInstance);
+	if(!InitInstance(hInstance, nCmdShow))
+		return FALSE;
+	
+	MSG msg;
+	
+	while(GetMessage(&msg, nullptr, 0, 0)){
+		if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)){
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+	return (int)msg.wParam;
+} 
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){//초기 WIN스타일을 그대로 차용하나, WM_COMMAND 시 기본윈도우프로시저(정의한)를 리턴하게끔 한다. 
+	switch(message){
+		case WM_COMMAND:
+			{
+				int wmId=LOWORD(wParam);
+				switch(wmId){
+					.....
+					default:
+						return DefWindowProc(hWnd, message, wParam, lParam);
+				}
+			}
+			break;
+		
+		.....
+		
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
