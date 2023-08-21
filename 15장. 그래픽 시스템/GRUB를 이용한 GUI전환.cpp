@@ -132,7 +132,7 @@ SkyWindow<SKY_GUI_SYSTEM>* m_pWindow; //템플릿 클래스를 이용한 예시_이를 상속받�
 //SkyGUI클래스 시작
 class SkyGUI{//똑같이 메소드만 통일시키면 코드충돌없이 새로운 GUI 개발 가능 
 	.....
-	void RegisterIOOListener(int processID, ConsoleIOListener* listener);
+	void RegisterIOListener(int processID, ConsoleIOListener* listener);
 	SkyRenderer* GetRenderer(){ return m_pRenderer; }
 	SkySheet* FindSheetById(int processId);
 	void FillRect8(int x, int y, int w, int h, char col, int actualX, int actualY);
