@@ -5,7 +5,7 @@ DLL파일은 코어파일이 항상 0x100000에 로드되는 것과 달리 선호되는 번지가 고정되어
 일반적인 DLL과 달리 힙에 로드시켜 별다른 주소매핑이 필요하지 않지만 힙은 코드적재가아닌 데이터저장을 위한 공간이기에
 WIN32에서 힙에 코드실행속성은 없다. 프로세스 공격을 이용한 형태로, 이러한 공격을 막기 위해 프로세스는 DLL코드가 정상적인
 영역에 로드됐는지를 확인해야한다. 별도의 페이지 설정과 DLL을 별도의 가상주소에 매핑해야한다. 
- 수정을 필요로 하는 주소는 DDL기준로즈주소+IMAGE_BAGE_RELLOCATION->VirtualAddress+WORD배열 각 요소 하위 12비트 값이다.
+ 수정을 필요로 하는 주소는 DLL기준로즈주소+IMAGE_BAGE_RELLOCATION->VirtualAddress+WORD배열 각 요소 하위 12비트 값이다.
 이 값과 기준주소의 차인 델타값을 더해 주소재배치를 진행한다. 
 */
 #include "ServiceFunc.h"
@@ -20,7 +20,7 @@ static bool PerformBaseRelocation(LOAD_CCL_CONTEXT* ctx, ptrdiff_t delta){//2-1-
 	//ctx->image_base: 힙에 할당된 베이스 주소
 	//ctx->hdr.OptionalHeader.ImageBase: 선호되는 이미지 로드 베이스 주소
 	//delta: 위 두 값의 차. 재배치해야되는 값들에 델타값을 더해주어 메모리 주소를 재배치
-	unsigned char* codeBase=(unsigned char*)ctx->image_base;//힙에 할당된 DDL 베이스 주소 
+	unsigned char* codeBase=(unsigned char*)ctx->image_base;//힙에 할당된 DLL 베이스 주소 
 	delta=ctx->image_base-ctx->hdr.OptionalHeader.ImageBase;//베이스 주소에서 이미지를 재배치할 값만큼 빼어 차이를 저장한다(일괄적 계산을 위함) 
 	
 	PIMAGE_DATA_DIRECTORY directory=GET_HEADER_DICTIONARY(ctx->hdr, IMAGE_DIRECTORY_ENTRY_BASERELOC);//재배치 관련 이미지 데이터 디렉토리를 얻는다(ctx_hdr까지 얼마나 변환해야하는지)
@@ -31,7 +31,7 @@ static bool PerformBaseRelocation(LOAD_CCL_CONTEXT* ctx, ptrdiff_t delta){//2-1-
 	relocation=(PIMAGE_BASE_RELOCATION)(coseBase+directory->VirtualAddress);//relocation을 위해 베이스코드주소에 directory값을 더하여 각각의 선호되는 위치정보를 PIMAGE_BASE_RELOCATION구조체로 저장한다(재배치 테이블) 
 	for(; relocation->VirtualAddress>0;){
 		DWORD i;
-		unsigned char* dest=codeBase+relocation->VirtualAddress;//목적지 주소: DDL베이스주소+재배치요소의 가상주소 
+		unsigned char* dest=codeBase+relocation->VirtualAddress;//목적지 주소: DLL베이스주소+재배치요소의 가상주소 
 		unsigned short* relInfo=(unsigned short*)OffsetPointer(relocation, IMAGE_SIZEOF_BASE_RELOCATION);//수정되어야할 offset값 
 		
 		for(i=0; i<((relocation->SizeOfBlock-IMAGE_SIZEOF_BASE_RELOCATION)/2); i++, relInfo++){
@@ -72,7 +72,7 @@ ELoadDLLResult LoadDLL(LOAD_DLL_READPROC read_proc, void* read_proc_param, int f
 	//메모리 속성 변경 
 	res=LoadDLL_SetSectionMemoryProtection(&ctx);
 	//DLL메인 엔트리 수행 
-	res=LoadDLL_CallDLLEntryPoint(&ctx, flags);//2-1-6. DDLMain실행 
+	res=LoadDLL_CallDLLEntryPoint(&ctx, flags);//2-1-6. DlLMain실행 
 	.....
 }
 
