@@ -53,3 +53,37 @@ void SkyDebugger::TraceStack(unsigned int maxFrames){
 		SkyConsole::Print(" 0x{%x}	\n", eip);//복귀주소를 출력 
 	}
 }
+
+//3. testEngine내용을 SkyDebugger에 옮긴것 
+bool SkyDebugger::LoadSymbol(const char* moduleName){//SkyDebugger::GetInstance()->LoadSymbol("DEBUG_ENGINE_DLL");
+	//디버그 엔진 모듈 찾기 
+	MODULE_HANDLE hwnd=SkyModuleManager::GetInstance()->LoadModuleFromMemory(moduleName);
+	if(hwnd==nullptr){
+		HaltSystem("Memory Module Load Fail!!");
+	}
+	
+	//인터페이스에서 함수를 얻어옴 
+	PSetSkyMockInterface SetSkyMockInterface=(PSetSkyMockInterface)SkyModuleManager::GetInstance()->GetModuleFunction(hwnd, "SetSkyMockInterface");
+	PGetDebugEngineDLL GetDebugEngineDLLInterface=(PGetDebugEngineDLL)SkyModuleManager::GetInstance()->GetModuleFunction(hwnd, "GetDebugEngineDLL");
+	
+	
+	SetSkyMockInterface(g_allocInterface, g_fileInterface, g_printInterface);
+	if(!GetDebugEngineDLLInterface){
+		HaltSystem("Memory Module Load Fail!!");
+	}
+	
+	m_pMapReader=GetDebugEngineDLLInterface();
+	if(m_pMapReader==nullptr){
+		HaltSystem("Map Reader Creation Fail!!");
+	}
+	...
+}
+
+void SkyDebugger::TraceStackWithSymbol(unsigned int maxFrames){//여러 정보들을 포함하여 traceStack 
+	...
+	for(unsigned int frame=0; frame<maxFrames; ++frame){
+		...
+		bool result=m_pMapReader->getAddressInfo(eip, name, fileName2, lineNumber, function, resultAddress);
+		...
+	}
+}

@@ -1,0 +1,12 @@
+SkyMockInterface g_mockInterface;
+
+extern "C" __declspec(dllexport) void SetSkyMockInterface(SKY_ALLOC_Interface allocInterface, SKY_FILE_Interface fileInterface, SKY_Print_Interface printInterface){//인자로 온 것을 세팅 
+	g_mockInterface.g_allocInterface=allocInterface;
+	g_mockInterface.g_fileInterface=fileInterface;
+	g_mockInterface.g_printInterface=printInterface;
+} 
+
+extern "C" __declspec(dllexport) I_MapFileReader* GetDebugEngineDLL(){
+	I_MapFileReader* reader=new MapFileReader();
+	return reader;
+}

@@ -53,3 +53,7 @@ int main(){
 	
 	return 0;
 }
+
+//DebugEngine.dll 외부 인터페이스 사용코드 예시
+fp=g_mockInterface.g_fileInterface.sky_fopen(fileName, "r") ;
+g_mockInterface.g_printInterface.sky_printf("success to open map file %s\n", fileName);
